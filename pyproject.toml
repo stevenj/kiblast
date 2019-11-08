@@ -1,10 +1,19 @@
 [tool.poetry]
 name = "KiBlast"
 version = "0.1.0"
-description = ""
+description = "Kicad Bom Generator/Costing"
 authors = ["Steven Johnson <sakurainds@gmail.com>"]
 license="GPL-3.0"
 readme = "README.md"
+classifiers = [
+    "Development Status :: 1 - Planning",
+    "Environment :: Console",
+    "Environment :: Plugins",
+    "Intended Audience :: Manufacturing",
+    "Natural Language :: English",
+    "Operating System :: POSIX :: Linux",
+    "Topic :: Scientific/Engineering :: Electronic Design Automation (EDA)",    
+]
 
 
 [tool.poetry.dependencies]
