@@ -12,18 +12,46 @@ classifiers = [
     "Intended Audience :: Manufacturing",
     "Natural Language :: English",
     "Operating System :: POSIX :: Linux",
-    "Topic :: Scientific/Engineering :: Electronic Design Automation (EDA)",    
+    "Topic :: Scientific/Engineering :: Electronic Design Automation (EDA)",
 ]
-
+include = ["resources/logo.png"]
 
 [tool.poetry.dependencies]
 python = "^3.6"
+appdirs = "^1.4"
+click = "^7.0"
+tomlkit = "^0.5.8"
+pygments = "^2.4"
+lxml = "^4.4"
 
 [tool.poetry.dev-dependencies]
 pytest = "^3.0"
 flake8 = "^3.7"
 mypy = "^0.740.0"
 black = {version = "^18.3-alpha.0", allows-prereleases = true}
+
+[tool.poetry.scripts]
+# command_name = module_for_handler : function_for_handler
+kiblast = 'kiblast.kiblast:main'
+
+[tool.black]
+line-length = 88
+target-version = ['py36', 'py37', 'py38']
+include = '\.pyi?$'
+exclude = '''
+/(
+    \.eggs
+  | \.git
+  | \.hg
+  | \.mypy_cache
+  | \.tox
+  | \.venv
+  | _build
+  | buck-out
+  | build
+  | dist
+)/
+'''
 
 [build-system]
 requires = ["poetry>=0.12"]
