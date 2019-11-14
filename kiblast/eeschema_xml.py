@@ -13,6 +13,10 @@ class eeschema_xml:
         self.__eeschema_tree = etree.parse(xmlfile)
         self.__config = config
         self.__all_components = None
+        # TODO:  Read extra components from the extra components data files.
+        # Include them in the BOM as if they are in the XML Spreadsheet.
+        # Typically these are hardware components or PCBs.  Anything we need
+        # for the BOM but doesn't appear as a "Part" on the pcb design.
 
     def BoardTitle(self):
         return self.__eeschema_tree.find(
@@ -126,12 +130,18 @@ class eeschema_xml:
             all_variants.extend(list(comp["PARTS"].keys()))
         return list(set(all_variants))  # Makes list of variants UNIQUE
 
+    @staticmethod
+    def decode_ref(ref):
+        # Return the class designator and ref index
+        class_designator = ref.rstrip(string.digits)
+        ref_index = ref[-(len(ref) - len(class_designator)) :]
+
+        return (class_designator, ref_index)
+
     def get_all_refs(self):
         def ref_sorter(key):
-            lead = key.rstrip(string.digits)
-            count = key[-(len(key) - len(lead)) :]
-            newkey = "{:10}{:0>10}".format(lead, count)
-            return newkey
+            class_designator, ref_index = self.decode_ref(key)
+            return "{:10}{:0>10}".format(class_designator, ref_index)
 
         # Returns a SORTED list of unique References
         all_components = self.Components()
@@ -141,3 +151,43 @@ class eeschema_xml:
             all_refs.append(comp["REF"])
 
         return sorted(list(set(all_refs)), key=ref_sorter)  # Makes list of refs UNIQUE
+
+    def get_component(self, ref):
+        # Get the component with the specified reference.
+        # If the reference is not unique, return ALL components with that reference.
+        found_component = []
+        all_components = self.Components()
+        for component in all_components:
+            if component["REF"] == ref:
+                found_component.extend(component)
+        return found_component
+
+    def get_all_mfg_mpn(self):
+        # Return all components with the specified Manufacturer and Part Number
+        # and optionally size
+        found_mfg_mpn = []
+        all_components = self.Components()
+        for component in all_components:
+            for variant in component["PARTS"]:
+                if component["PARTS"][variant]["FITTED"]:
+                    found_mfg_mpn.append(
+                        (
+                            component["PARTS"][variant]["MFG"],
+                            component["PARTS"][variant]["MPN"],
+                        )
+                    )
+        return list(set(found_mfg_mpn))
+
+    def check_equivok(self, mfg_mpn):
+        # Check if the specified mfg_mpn is ok to lookup equivalents as well.
+        all_components = self.Components()
+        for component in all_components:
+            for variant in component["PARTS"]:
+                if (
+                    component["PARTS"][variant]["FITTED"]
+                    and component["PARTS"][variant]["MFG"] == mfg_mpn[0]
+                    and component["PARTS"][variant]["MPN"] == mfg_mpn[1]
+                    and component["PARTS"][variant]["EQUIVOK"]
+                ):
+                    return True
+        return False

@@ -80,6 +80,7 @@ def bom(infile, outfile, nostock, nooctopart):
     pprint.pprint(comp)
     print(eexml.get_all_variants())
     print(eexml.get_all_refs())
+    eexml.get_all_mfg_mpn()
 
 
 @main.command()
