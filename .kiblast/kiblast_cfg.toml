@@ -1,0 +1,7 @@
+# This is the TOML Formatted configuration file for KiBlast
+title = "KiBlast Configuration File"
+
+#---Options related to Querying Octopart-----------------------
+["www.octopart.com"]
+# The apikey to access octopart web api - Get it from Octopart
+apikey = "Something"

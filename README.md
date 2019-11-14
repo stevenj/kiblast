@@ -1,4 +1,4 @@
-# KiBlast BOM Costing Generator 
+# KiBlast BOM Costing Generator
 ![KiBlast](resources/logo.png)
 
 
@@ -30,7 +30,7 @@ Note, Part Number is supposed to be unique across package options.
         Defines pricing from sources not found on Octopart, such as LSCS or 4UConnector, Aliexpress, etc etc
         MFG,MPN, Link, MOQ, PRICE, MOQ, PRICE, ...
         Must have a separate file per costed source, the source name is derived from the file name LSCS.price.csv is prices for LSCS
-        
+
 6. Read Octopart pricing Cache File
         Octopart.cache.csv
         This contains the following:
@@ -43,7 +43,7 @@ Note, Part Number is supposed to be unique across package options.
 7. Generate a BOM.
         Make a Unique Sorted list of Components by MFG/MPN.  If MPN not Specified/Blank, use Value.  If MFG not specified, use "Generic"
         Generate warnings if components are inconsistent (not using the same footprint, other fields don't match, etc)
-        
+
         For Each unique component, if NOT IN STOCK, create a list of MFG/MPN, including equivalents we need to cost.
 
         For Each component to cost, if not in cache or cache too old, add to component query list.
@@ -56,6 +56,13 @@ Note, Part Number is supposed to be unique across package options.
 
         Emit BOM as CSV/XLS/ODS
 
-NOTE:  First do it all with CSV, but don't preclude option to use XLS or ODS later.        
+NOTE:  First do it all with CSV, but don't preclude option to use XLS or ODS later.
 
+DEVELOPMENT NOTE:
+
+To get the venv for development do this:
+```shell
+$ poetry shell
+$ source ~/.cache/pypoetry/virtualenvs/kiblast-py3.7/bin/activate
+```
 
