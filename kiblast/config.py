@@ -13,9 +13,9 @@ from pygments.formatters import TerminalFormatter, NullFormatter
 
 
 class KiBlastConfig:
-    CFG_NAME = "kiblast_cfg.toml"
+    CFG_NAME = defs.appname() + "_cfg.toml"
     CFG_NAMES = [
-        (os.path.join(os.getcwd(), ".kiblast", CFG_NAME), "LOCAL"),
+        (os.path.join(os.getcwd(), "." + defs.appname(), CFG_NAME), "LOCAL"),
         (
             os.path.join(
                 appdirs.user_config_dir(defs.APPNAME, defs.APPAUTHOR), CFG_NAME
