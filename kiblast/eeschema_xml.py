@@ -159,7 +159,7 @@ class eeschema_xml:
         all_components = self.Components()
         for component in all_components:
             if component["REF"] == ref:
-                found_component.extend(component)
+                found_component.append(component)
         return found_component
 
     def get_all_mfg_mpn(self):
