@@ -7,3 +7,7 @@ class defs:
     APPAUTHOR = "Sakura Industries Limited"
     FULLVERSION = APPNAME + " " + __version__
     SHORTVERSION = __version__
+
+    @classmethod
+    def appname(cls):
+        return cls.APPNAME.lower()
