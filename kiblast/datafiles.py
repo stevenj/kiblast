@@ -10,31 +10,35 @@ import csv
 
 class DataTableFile:
 
-    DATA_DIRS = [
+    __DATA_DIRS = [
         os.path.join(os.getcwd(), "." + defs.appname()),
         appdirs.user_data_dir(defs.APPNAME, defs.APPAUTHOR),
         appdirs.site_data_dir(defs.APPNAME, defs.APPAUTHOR),
     ]
 
-    __data = []
-
-    def __init__(self, base_name, defaults):
+    def __init__(self, basename, defaults):
         # Read in Data tables that match the base name
         # and the columns and their defaults.
         # Blank rows are skipped.
         # Rows with the column names matching (EXACTLY) are skipped
         # if base_name begins with a . then we look for all files that end in the base name
+        self.__BASENAME = basename
+        self.__DEFAULTS = defaults
+
+        # Initialise Instance Variables
+        self.__data = []
+
         data_files = []
-        for path in self.DATA_DIRS:
+        for path in self.__DATA_DIRS:
             if os.path.isdir(path):
                 with os.scandir(path) as entries:
                     for datafile in sorted(entries, key=lambda file: file.name):
-                        if self._chk_loadable(datafile, base_name):
+                        if self._chk_loadable(datafile, self.__BASENAME):
                             data_files.append(os.path.join(path, datafile))
 
         priority = 0
         for data in data_files:
-            self._load_data(data, defaults, priority)
+            self._load_data(data, self.__DEFAULTS, priority)
             priority += 1
 
     @staticmethod
@@ -82,19 +86,28 @@ class DataTableFile:
                 if isinstance(defaults[column], bool):
                     row[column] = self.dataToBool(row[column])
 
-            if "COMMENT" in row:
-                row["COMMENT"] = ", ".join(row["COMMENT"])
+            if "EXTRA" in row:
+                row["EXTRA"] = ", ".join(row["EXTRA"])
             else:
-                row["COMMENT"] = ""
+                row["EXTRA"] = ""
 
             row["PRIORITY"] = priority
+            row["SOURCE"] = sourcename
             return row
 
         with open(filename, newline="") as csvfile:
+            rawfilename = os.path.basename(filename)
+            if rawfilename.endswith(
+                self.__BASENAME + ".csv"
+            ) and self.__BASENAME.startswith("."):
+                sourcename = rawfilename[0 : -(len(self.__BASENAME) + 4)]
+            else:
+                sourcename = "COMMON"
+
             datareader = csv.DictReader(
                 csvfile,
                 fieldnames=list(defaults.keys()),
-                restkey="COMMENT",
+                restkey="EXTRA",
                 dialect="excel",
                 skipinitialspace=True,
                 escapechar="\\",
@@ -156,41 +169,55 @@ class PartCache:
         pass
 
 
-class StockData:
+class StockData(DataTableFile):
     def __init__(self):
-        pass
+        super().__init__(
+            ".stock",
+            {
+                "MFG": None,
+                "MPN": None,
+                "SIZE": None,
+                "COST": None,
+                "COST_QTY": None,
+                "QTY_ON_HAND": 0,
+                "DESCRIPTION": None,
+            },
+        )
 
 
-class EquivalentsData:
+class EquivalentsData(DataTableFile):
     def __init__(self):
-        pass
+        super().__init__(".equiv", {"MFG": None, "MPN": None})
+        # EXTRA is a list of "MFG,MPN" pairs which declare the equivalent parts to the master part
 
 
-class PricingData:
+class PricingData(DataTableFile):
     def __init__(self):
-        pass
+        super().__init__(".price", {"MFG": None, "MPN": None, "LINK": None})
+        # EXTRA is a list of "MOQ,PRICE" pairs which declare the price at various MOQ's
 
 
-class ExtraParts:
-    __DEFAULTS = {
-        "REF": None,
-        "VARIANT": "COMMON",
-        "MFG": "Generic",
-        "MPN": None,
-        "SIZE": None,
-        "EQUIVOK": True,
-        "FITTED": False,
-        "DESC": None,
-    }
-
+class ExtraParts(DataTableFile):
     def __init__(self):
-        self.__data = DataTableFile(".parts", self.__DEFAULTS)
+        super().__init__(
+            ".parts",
+            {
+                "REF": None,
+                "VARIANT": "COMMON",
+                "MFG": "Generic",
+                "MPN": None,
+                "SIZE": None,
+                "EQUIVOK": True,
+                "FITTED": False,
+                "DESC": None,
+            },
+        )
 
     def getParts(self, variant=None, known_refs=[]):
         # Get the unique extra parts list for the named variant.
         # only gets parts whose ref is not already known.
         def add_extra_parts(variant):
-            for row in self.__data.getAllData():
+            for row in self.getAllData():
                 if row["VARIANT"] == variant:
                     if row["REF"] not in known_refs:
                         known_refs.append(row["REF"])
@@ -204,23 +231,18 @@ class ExtraParts:
 
     def getExtraVariants(self, known_variants=[]):
         extra_variants = []
-        for row in self.__data.getAllData():
+        for row in self.getAllData():
             if row["VARIANT"] not in known_variants:
                 known_variants.append(row["VARIANT"])
                 extra_variants.append(row["VARIANT"])
 
         return extra_variants
 
-    def dumpAll(self):
-        self.__data.dumpAllData()
-
 
 class AllData:
-    part_cache = PartCache()
-    stock = StockData()
-    equivalents = EquivalentsData()
-    pricings = PricingData()
-    extras = ExtraParts()
-
     def __init__(self):
-        pass
+        # part_cache = PartCache()
+        self.stock = StockData()
+        self.equivalents = EquivalentsData()
+        self.pricings = PricingData()
+        self.extras = ExtraParts()
