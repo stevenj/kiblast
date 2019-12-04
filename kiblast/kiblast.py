@@ -18,7 +18,6 @@ from .datafiles import DataTableFile, AllData
 import click
 import os
 import appdirs
-import pprint
 
 CACHE_DIR = appdirs.user_cache_dir(defs.APPNAME, defs.APPAUTHOR)
 LOG_DIR = appdirs.user_log_dir(defs.APPNAME, defs.APPAUTHOR)
@@ -64,27 +63,14 @@ def bom(infile, outfile, nostock, nooctopart):
         exit(2)
 
     # OK, so start processing the BOM.
-    """
-    eexml = eeschema_xml(infile, cfg)
-    print(eexml.BoardTitle())
-    print(eexml.Company())
-    print(eexml.BoardRev())
-    print(eexml.BoardDate())
-    print(eexml.ExportDate())
-    comp = eexml.Components()
-    pprint.pprint(comp)
-    print(eexml.get_all_variants())
-    print(eexml.get_all_refs())
-    eexml.get_all_mfg_mpn()
-    """
-    AllData()
+    data = AllData()
 
 
 @main.command()
 def dump_Extra_Parts(**kwargs):
     """ Show all the extra parts which will be included in the BOM. """
     data = AllData()
-    data.extras.dumpAll()
+    data.extras.dumpAllData()
 
 
 @main.command()
