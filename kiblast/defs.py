@@ -1,4 +1,9 @@
-""" Definitions for KiBlast """
+# -*- coding: utf-8 -*-
+""" Definitions for KiBlast
+
+SPDX-License-Identifier: GPL-3.0-or-later
+Copyright © 2019 Steven Johnson
+"""
 from kiblast import __version__
 
 

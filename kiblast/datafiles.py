@@ -1,5 +1,8 @@
 # -*- coding: utf-8 -*-
 """KiBlast Data File Handling
+
+SPDX-License-Identifier: GPL-3.0-or-later
+Copyright © 2019 Steven Johnson
 """
 import os
 import sys

@@ -1,5 +1,8 @@
 # -*- coding: utf-8 -*-
 """KiBlast Configuration Handling
+
+SPDX-License-Identifier: GPL-3.0-or-later
+Copyright © 2019 Steven Johnson
 """
 from .defs import defs
 

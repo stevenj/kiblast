@@ -9,6 +9,8 @@ the local stocking price.
 Todo:
     * Everything
 
+SPDX-License-Identifier: GPL-3.0-or-later
+Copyright © 2019 Steven Johnson
 """
 from .defs import defs
 from .config import KiBlastConfig
